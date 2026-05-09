@@ -3,8 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>打卡助手 - WEB版</title>
+    <title>打卡</title>
     <style>
+        /* ========== 设计系统 ========== */
+        :root {
+            --brand: #07C160;
+            --brand-light: #E8F8EF;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --bg-page: #F5F5F5;
+            --bg-card: #FFFFFF;
+            --border: #E8E8E8;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,379 +35,392 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f6f6f6;
-            color: #333;
+            font-family: var(--font);
+            background: var(--bg-page);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
-            max-width: 800px;
+            padding: var(--space-lg);
+            max-width: 600px;
             margin: 0 auto;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 时间显示区域 */
-        .time-section {
+        /* ========== 时间区域（信息展示） ========== */
+        .header {
+            padding: var(--space-lg) 0;
             text-align: center;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .current-time {
-            font-size: 72px;
+        .header-time {
+            font-size: 48px;
             font-weight: 300;
-            color: #333;
-            letter-spacing: 4px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            line-height: 1.1;
         }
 
-        .current-date {
-            font-size: 16px;
-            color: #888;
-            margin-top: 10px;
+        .header-date {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-top: var(--space-sm);
         }
 
-        /* 打卡类型选择 */
-        .type-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 30px;
-            background: white;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        /* ========== Segmented Control ========== */
+        .segmented-control {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-xs);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            gap: 2px;
         }
 
-        .type-item {
-            padding: 16px;
-            border-radius: 40px;
-            font-size: 18px;
-            background: #f5f5f5;
-            color: #666;
+        .segmented-item {
+            flex: 1;
             text-align: center;
+            padding: 10px var(--space-sm);
+            font-size: 15px;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            font-family: var(--font);
         }
 
-        .type-item:hover {
-            background: #e8e8e8;
+        .segmented-item:hover {
+            background: var(--bg-page);
         }
 
-        .type-item.active {
-            background: #07c160;
+        .segmented-item.active {
+            background: var(--brand);
             color: white;
             font-weight: 500;
-            border-color: #07c160;
         }
 
-        /* 定位信息区域 */
-        .location-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        /* ========== 位置卡片 ========== */
+        .location-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
         }
 
-        .location-header {
+        .location-row {
             display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
+            align-items: flex-start;
+            gap: var(--space-sm);
         }
 
         .location-icon {
-            font-size: 24px;
+            color: var(--text-tertiary);
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .location-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .location-text {
-            font-size: 16px;
-            color: #333;
-            flex: 1;
+            font-size: 15px;
+            color: var(--text-primary);
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        .location-text.placeholder {
+            color: var(--text-tertiary);
         }
 
         .location-coords {
             display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #999;
-            margin-bottom: 20px;
-            padding: 10px 0;
+            gap: var(--space-md);
+            margin-top: var(--space-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--border);
+        }
+
+        .location-coords span {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-family: 'SF Mono', 'Menlo', monospace;
         }
 
         .refresh-btn {
-            text-align: center;
-            padding: 12px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            font-size: 16px;
-            color: #07c160;
+            margin-top: var(--space-sm);
+            padding: var(--space-sm) 0;
+            font-size: 14px;
+            color: var(--brand);
             cursor: pointer;
-            transition: all 0.3s;
+            background: none;
+            border: none;
+            font-family: var(--font);
+            text-align: left;
+            width: 100%;
         }
 
         .refresh-btn:hover {
-            background: #e8e8e8;
+            color: #06AD56;
         }
 
-        /* 备注输入框 */
+        /* ========== 备注输入框（弱化） ========== */
         .remark-section {
-            background: white;
-            border-radius: 16px;
-            padding: 20px 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: var(--space-md);
         }
 
         .remark-input {
             width: 100%;
-            font-size: 16px;
-            color: #333;
-            border: none;
+            padding: var(--space-md);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             outline: none;
-            padding: 10px 0;
+            font-family: var(--font);
+            transition: border-color 0.2s;
         }
 
-        /* 打卡按钮 */
+        .remark-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .remark-input:focus {
+            border-color: var(--brand);
+        }
+
+        /* ========== 核心CTA按钮 ========== */
         .checkin-btn {
-            background: #07c160;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            border-radius: 16px;
-            font-size: 24px;
-            font-weight: 500;
-            letter-spacing: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(7, 193, 96, 0.3);
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
             width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 500;
+            color: white;
+            background: var(--brand);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.2);
+            margin-bottom: var(--space-xl);
+            letter-spacing: 4px;
         }
 
         .checkin-btn:hover {
+            background: #06AD56;
+            box-shadow: 0 6px 16px rgba(7, 193, 96, 0.3);
+        }
+
+        .checkin-btn:active {
             transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.3);
         }
 
         .checkin-btn:disabled {
-            background: #ccc;
+            background: #CCCCCC;
             box-shadow: none;
             cursor: not-allowed;
         }
 
-        /* 统计信息 */
+        /* ========== 统计区域 ========== */
         .stats-section {
             display: flex;
-            justify-content: space-around;
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg) var(--space-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex: 1;
+            text-align: center;
         }
 
         .stat-number {
-            font-size: 48px;
-            font-weight: bold;
-            color: #07c160;
+            font-size: 32px;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         .stat-label {
-            font-size: 14px;
-            color: #999;
-            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: var(--space-xs);
         }
 
-        /* 打卡记录列表 */
+        /* ========== 记录列表 ========== */
         .records-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
         }
 
         .records-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: var(--space-md) var(--space-md);
+            border-bottom: 1px solid var(--border);
         }
 
         .records-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         .records-actions {
             display: flex;
-            gap: 10px;
+            gap: var(--space-sm);
         }
 
         .action-btn {
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 20px;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.3s;
             border: none;
-            color: white;
+            font-family: var(--font);
+            transition: all 0.2s;
         }
 
         .export-btn {
-            background: #07c160;
+            background: var(--brand-light);
+            color: var(--brand);
         }
 
         .export-btn:hover {
-            background: #06ad56;
+            background: #D0F0E0;
         }
 
         .clear-btn {
-            background: #ff4d4f;
+            background: #FFF0F0;
+            color: #E04042;
         }
 
         .clear-btn:hover {
-            background: #e04042;
+            background: #FFE0E0;
         }
 
         /* 记录项 */
         .record-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #f5f5f5;
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border);
+            gap: var(--space-md);
         }
 
         .record-item:last-child {
             border-bottom: none;
         }
 
-        .record-left {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            gap: 15px;
-        }
-
         .record-type {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            min-width: 60px;
-            text-align: center;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
         }
 
         .type-work {
-            background: #e6f7ff;
-            color: #1890ff;
+            background: #E6F7FF;
+            color: #1890FF;
         }
 
         .type-off {
-            background: #fff7e6;
-            color: #fa8c16;
+            background: #FFF7E6;
+            color: #FA8C16;
         }
 
         .type-out {
-            background: #f6ffed;
-            color: #52c41a;
+            background: #F6FFED;
+            color: #52C41A;
         }
 
         .type-back {
-            background: #fff0f6;
-            color: #eb2f96;
+            background: #FFF0F6;
+            color: #EB2F96;
         }
 
         .record-info {
-            display: flex;
-            flex-direction: column;
             flex: 1;
+            min-width: 0;
         }
 
         .record-time {
-            font-size: 16px;
-            color: #333;
+            font-size: 15px;
+            color: var(--text-primary);
             font-weight: 500;
         }
 
         .record-address {
-            font-size: 14px;
-            color: #999;
-            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 300px;
         }
 
         .record-remark {
             font-size: 12px;
-            color: #07c160;
-            margin-top: 6px;
-        }
-
-        .record-right {
-            padding-left: 20px;
+            color: var(--brand);
+            margin-top: 4px;
         }
 
         .delete-btn {
-            font-size: 24px;
-            color: #ccc;
+            font-size: 18px;
+            color: var(--text-tertiary);
             cursor: pointer;
-            padding: 5px 10px;
-            transition: all 0.3s;
             background: none;
             border: none;
+            padding: var(--space-xs);
+            font-family: var(--font);
+            transition: color 0.2s;
         }
 
         .delete-btn:hover {
-            color: #ff4d4f;
+            color: #E04042;
         }
 
-        /* 无记录提示 */
         .no-records {
             text-align: center;
-            padding: 60px 0;
-            color: #999;
-            font-size: 16px;
+            padding: var(--space-xl) var(--space-md);
+            color: var(--text-tertiary);
+            font-size: 14px;
         }
 
-        /* Toast提示 */
+        /* ========== Toast ========== */
         .toast {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             color: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            font-size: 15px;
             z-index: 1000;
             animation: fadeInOut 2s ease-in-out;
         }
 
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { opacity: 0; }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
 
-        /* 模态框 */
+        /* ========== 模态框 ========== */
         .modal {
             display: none;
             position: fixed;
@@ -392,10 +428,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 1001;
             justify-content: center;
             align-items: center;
+            padding: var(--space-lg);
         }
 
         .modal.show {
@@ -403,117 +440,122 @@
         }
 
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
+            background: var(--bg-card);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
             max-width: 400px;
-            width: 90%;
+            width: 100%;
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
         }
 
         .modal-text {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 25px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+            line-height: 1.5;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 15px;
+            gap: var(--space-md);
             justify-content: flex-end;
         }
 
         .modal-btn {
             padding: 10px 24px;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
             cursor: pointer;
             border: none;
-            transition: all 0.3s;
+            font-family: var(--font);
+            transition: all 0.2s;
         }
 
         .modal-btn.cancel {
-            background: #f5f5f5;
-            color: #666;
+            background: var(--bg-page);
+            color: var(--text-secondary);
         }
 
         .modal-btn.cancel:hover {
-            background: #e8e8e8;
+            background: var(--border);
         }
 
         .modal-btn.confirm {
-            background: #07c160;
+            background: var(--brand);
             color: white;
         }
 
         .modal-btn.confirm:hover {
-            background: #06ad56;
+            background: #06AD56;
         }
 
         .modal-btn.danger {
-            background: #ff4d4f;
+            background: #E04042;
             color: white;
         }
 
         .modal-btn.danger:hover {
-            background: #e04042;
+            background: #C03032;
         }
     </style>
 </head>
 <body>
-    <!-- 时间显示区域 -->
-    <div class="time-section">
-        <div class="current-time" id="currentTime">00:00:00</div>
-        <div class="current-date" id="currentDate">2026-05-09 周六</div>
+    <!-- 时间区域（简化为信息展示） -->
+    <div class="header">
+        <div class="header-time" id="currentTime">00:00:00</div>
+        <div class="header-date" id="currentDate">2026-05-09 周六</div>
     </div>
 
-    <!-- 打卡类型选择 -->
-    <div class="type-section">
-        <div class="type-item active" data-type="上班" onclick="selectType(this)">上班</div>
-        <div class="type-item" data-type="下班" onclick="selectType(this)">下班</div>
-        <div class="type-item" data-type="外出" onclick="selectType(this)">外出</div>
-        <div class="type-item" data-type="返回" onclick="selectType(this)">返回</div>
+    <!-- Segmented Control（取代四个独立按钮） -->
+    <div class="segmented-control">
+        <button class="segmented-item active" data-type="上班" onclick="selectType(this)">上班</button>
+        <button class="segmented-item" data-type="下班" onclick="selectType(this)">下班</button>
+        <button class="segmented-item" data-type="外出" onclick="selectType(this)">外出</button>
+        <button class="segmented-item" data-type="返回" onclick="selectType(this)">返回</button>
     </div>
 
-    <!-- 定位信息区域 -->
-    <div class="location-section">
-        <div class="location-header">
+    <!-- 位置卡片（简化） -->
+    <div class="location-card">
+        <div class="location-row">
             <span class="location-icon">📍</span>
-            <span class="location-text" id="locationAddress">正在获取位置...</span>
+            <div class="location-info">
+                <div class="location-text placeholder" id="locationAddress">正在获取位置...</div>
+                <div class="location-coords" id="locationCoords" style="display: none;">
+                    <span id="latitude">纬度: --</span>
+                    <span id="longitude">经度: --</span>
+                </div>
+            </div>
         </div>
-        <div class="location-coords" id="locationCoords" style="display: none;">
-            <span id="latitude">纬度: --</span>
-            <span id="longitude">经度: --</span>
-        </div>
-        <div class="refresh-btn" onclick="getLocation()">刷新定位</div>
+        <button class="refresh-btn" onclick="getLocation()">刷新定位</button>
     </div>
 
-    <!-- 备注输入框 -->
+    <!-- 备注输入框（弱化） -->
     <div class="remark-section">
         <input type="text" class="remark-input" id="remark" placeholder="添加备注（可选）" maxlength="100">
     </div>
 
-    <!-- 打卡按钮 -->
+    <!-- 核心CTA（唯一的打卡按钮） -->
     <button class="checkin-btn" id="checkinBtn" onclick="doCheckin()">打 卡</button>
 
-    <!-- 统计信息 -->
+    <!-- 统计区域 -->
     <div class="stats-section">
         <div class="stat-item">
-            <span class="stat-number" id="todayCount">0</span>
-            <span class="stat-label">今日</span>
+            <div class="stat-number" id="todayCount">0</div>
+            <div class="stat-label">今日</div>
         </div>
         <div class="stat-item">
-            <span class="stat-number" id="weekCount">0</span>
-            <span class="stat-label">本周</span>
+            <div class="stat-number" id="weekCount">0</div>
+            <div class="stat-label">本周</div>
         </div>
     </div>
 
-    <!-- 打卡记录列表 -->
+    <!-- 记录列表 -->
     <div class="records-section">
         <div class="records-header">
             <span class="records-title">打卡记录</span>
@@ -543,10 +585,7 @@
     <script>
         // 配置
         const CONFIG = {
-            // 腾讯位置服务Key（可选，不配置则显示经纬度）
-            qqMapKey: 'HXBZ-LJZ6Q-YVP5G-4IX36-5QR36-N4BYG', // 腾讯位置服务Key
-            
-            // 打卡类型
+            qqMapKey: 'HXBZ-LJZ6Q-YVP5G-4IX36-5QR36-N4BYG',
             checkinTypes: ['上班', '下班', '外出', '返回']
         };
 
@@ -561,15 +600,11 @@
         window.onload = function() {
             updateTime();
             loadRecords();
-            
-            // 每秒更新时间
             setInterval(updateTime, 1000);
-            
-            // 获取位置
             getLocation();
         };
 
-        // 更新时间显示
+        // 更新时间
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -586,14 +621,11 @@
             document.getElementById('currentDate').textContent = `${year}-${month}-${day} ${weekDay}`;
         }
 
-        // 选择打卡类型
+        // 选择打卡类型（Segmented Control）
         function selectType(element) {
-            // 移除所有active类
-            document.querySelectorAll('.type-item').forEach(item => {
+            document.querySelectorAll('.segmented-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
-            // 添加active类到当前元素
             element.classList.add('active');
             currentCheckinType = element.dataset.type;
         }
@@ -601,12 +633,12 @@
         // 获取位置
         function getLocation() {
             if (!navigator.geolocation) {
-                showToast('您的浏览器不支持定位功能');
-                document.getElementById('locationAddress').textContent = '浏览器不支持定位';
+                showToast('浏览器不支持定位');
                 return;
             }
 
             document.getElementById('locationAddress').textContent = '正在获取位置...';
+            document.getElementById('locationAddress').classList.add('placeholder');
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -618,10 +650,7 @@
                     document.getElementById('longitude').textContent = `经度: ${currentLongitude}`;
                     document.getElementById('locationCoords').style.display = 'flex';
                     
-                    // 解析地址
                     reverseGeocoder(currentLatitude, currentLongitude);
-                    
-                    // 更新按钮状态
                     document.getElementById('checkinBtn').disabled = false;
                 },
                 (error) => {
@@ -631,16 +660,16 @@
                     let errorMsg = '获取位置失败：';
                     switch(error.code) {
                         case error.PERMISSION_DENIED:
-                            errorMsg += '用户拒绝了定位请求';
+                            errorMsg += '请允许定位权限';
                             break;
                         case error.POSITION_UNAVAILABLE:
                             errorMsg += '位置信息不可用';
                             break;
                         case error.TIMEOUT:
-                            errorMsg += '获取位置超时';
+                            errorMsg += '获取超时';
                             break;
                         default:
-                            errorMsg += '发生未知错误';
+                            errorMsg += '未知错误';
                     }
                     
                     document.getElementById('locationAddress').textContent = errorMsg;
@@ -660,7 +689,8 @@
             
             if (!key) {
                 document.getElementById('locationAddress').textContent = 
-                    `纬度: ${parseFloat(latitude).toFixed(6)}, 经度: ${parseFloat(longitude).toFixed(6)}`;
+                    `${parseFloat(latitude).toFixed(6)}, ${parseFloat(longitude).toFixed(6)}`;
+                document.getElementById('locationAddress').classList.remove('placeholder');
                 return;
             }
             
@@ -675,13 +705,15 @@
                     const recommend = data.result.formatted_addresses;
                     document.getElementById('locationAddress').textContent = 
                         recommend ? recommend.recommend : address;
+                    document.getElementById('locationAddress').classList.remove('placeholder');
                 } else {
                     throw new Error('解析失败');
                 }
             } catch (error) {
                 console.error('地址解析失败:', error);
                 document.getElementById('locationAddress').textContent = 
-                    `纬度: ${parseFloat(latitude).toFixed(6)}, 经度: ${parseFloat(longitude).toFixed(6)}`;
+                    `${parseFloat(latitude).toFixed(6)}, ${parseFloat(longitude).toFixed(6)}`;
+                document.getElementById('locationAddress').classList.remove('placeholder');
             }
         }
 
@@ -706,18 +738,14 @@
                 remark: remark
             };
 
-            // 保存到localStorage
             let records = JSON.parse(localStorage.getItem('checkinRecords') || '[]');
-            records.unshift(record); // 新记录添加到开头
-            localStorage.setItem('checkinRecords', JSON.stringify(records.slice(0, 50))); // 只保存最近50条
+            records.unshift(record);
+            localStorage.setItem('checkinRecords', JSON.stringify(records.slice(0, 50)));
 
-            // 更新页面数据
             document.getElementById('remark').value = '';
             loadRecords();
-            
             showToast('打卡成功');
             
-            // 振动反馈（如果设备支持）
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
@@ -734,7 +762,7 @@
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
-        // 加载打卡记录
+        // 加载记录
         function loadRecords() {
             const records = JSON.parse(localStorage.getItem('checkinRecords') || '[]');
             const recordsList = document.getElementById('recordsList');
@@ -747,17 +775,13 @@
                     const typeClass = getRecordTypeClass(record.type);
                     html += `
                         <div class="record-item">
-                            <div class="record-left">
-                                <div class="record-type ${typeClass}">${record.type}</div>
-                                <div class="record-info">
-                                    <span class="record-time">${record.time}</span>
-                                    <span class="record-address">${record.address}</span>
-                                    ${record.remark ? `<span class="record-remark">备注: ${record.remark}</span>` : ''}
-                                </div>
+                            <div class="record-type ${typeClass}">${record.type}</div>
+                            <div class="record-info">
+                                <div class="record-time">${record.time}</div>
+                                <div class="record-address">${record.address}</div>
+                                ${record.remark ? `<div class="record-remark">备注: ${record.remark}</div>` : ''}
                             </div>
-                            <div class="record-right">
-                                <button class="delete-btn" onclick="deleteRecord(${record.id})">×</button>
-                            </div>
+                            <button class="delete-btn" onclick="deleteRecord(${record.id})">×</button>
                         </div>
                     `;
                 });
@@ -767,7 +791,7 @@
             calculateStats();
         }
 
-        // 获取记录类型样式类
+        // 获取记录类型样式
         function getRecordTypeClass(type) {
             switch(type) {
                 case '上班': return 'type-work';
@@ -778,16 +802,14 @@
             }
         }
 
-        // 计算统计数据
+        // 计算统计
         function calculateStats() {
             const records = JSON.parse(localStorage.getItem('checkinRecords') || '[]');
             const now = new Date();
             
-            // 今日记录数
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const todayCount = records.filter(r => r.time.startsWith(todayStr)).length;
             
-            // 本周记录数
             const weekStart = new Date(now);
             weekStart.setDate(now.getDate() - now.getDay());
             weekStart.setHours(0, 0, 0, 0);
@@ -797,19 +819,18 @@
             document.getElementById('weekCount').textContent = weekCount;
         }
 
-        // 删除单条记录
+        // 删除记录
         function deleteRecord(id) {
             showModal('确认删除', '确定要删除这条打卡记录吗？', () => {
                 let records = JSON.parse(localStorage.getItem('checkinRecords') || '[]');
                 records = records.filter(r => r.id !== id);
                 localStorage.setItem('checkinRecords', JSON.stringify(records));
-                
                 loadRecords();
                 showToast('已删除');
             });
         }
 
-        // 清空所有记录
+        // 清空记录
         function clearRecords() {
             showModal('确认清空', '确定要清空所有打卡记录吗？此操作不可恢复。', () => {
                 localStorage.setItem('checkinRecords', JSON.stringify([]));
@@ -827,13 +848,11 @@
                 return;
             }
 
-            // 生成CSV内容
             let csv = '打卡类型,时间,地址,备注,纬度,经度\n';
             records.forEach(r => {
                 csv += `${r.type},${r.time},"${r.address}",${r.remark || ''},${r.latitude},${r.longitude}\n`;
             });
 
-            // 创建下载链接
             const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -845,7 +864,7 @@
             showToast('导出成功');
         }
 
-        // 显示Toast提示
+        // Toast提示
         function showToast(message) {
             const existingToast = document.querySelector('.toast');
             if (existingToast) {
@@ -862,7 +881,7 @@
             }, 2000);
         }
 
-        // 显示模态框
+        // 模态框
         function showModal(title, text, callback, isDanger = false) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalText').textContent = text;
@@ -874,13 +893,11 @@
             document.getElementById('modal').classList.add('show');
         }
 
-        // 关闭模态框
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
             modalCallback = null;
         }
 
-        // 确认模态框
         function confirmModal() {
             if (modalCallback) {
                 modalCallback();
@@ -888,7 +905,6 @@
             closeModal();
         }
 
-        // 点击模态框外部关闭
         document.getElementById('modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
