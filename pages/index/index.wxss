@@ -1,0 +1,306 @@
+/* pages/index/index.wxss */
+
+/* 时间显示区域 */
+.time-section {
+  text-align: center;
+  padding: 40rpx 0;
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.current-time {
+  font-size: 72rpx;
+  font-weight: 300;
+  color: #333;
+  letter-spacing: 4rpx;
+}
+
+.current-date {
+  font-size: 28rpx;
+  color: #888;
+  margin-top: 10rpx;
+}
+
+/* 打卡类型选择 */
+.type-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 20rpx;
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.type-item {
+  padding: 16rpx 32rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  background: #f5f5f5;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.type-item.active {
+  background: #07c160;
+  color: white;
+  font-weight: 500;
+}
+
+/* 定位信息区域 */
+.location-section {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.location-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.location-icon {
+  font-size: 36rpx;
+  margin-right: 10rpx;
+}
+
+.location-text {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+.location-coords {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+  padding: 10rpx 0;
+}
+
+.refresh-btn {
+  text-align: center;
+  padding: 16rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #07c160;
+}
+
+/* 备注输入框 */
+.remark-section {
+  background: white;
+  border-radius: 16rpx;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.remark-input {
+  width: 100%;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 打卡按钮 */
+.checkin-btn {
+  background: #07c160;
+  color: white;
+  text-align: center;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  font-size: 34rpx;
+  font-weight: 500;
+  letter-spacing: 8rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
+  transition: all 0.3s;
+}
+
+.checkin-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.3);
+}
+
+.checkin-btn.disabled {
+  background: #ccc;
+  box-shadow: none;
+}
+
+/* 统计信息 */
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+/* 打卡记录列表 */
+.records-section {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.records-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.records-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.export-btn {
+  background: #07c160;
+  color: white;
+}
+
+.clear-btn {
+  background: #ff4d4f;
+  color: white;
+}
+
+/* 记录项 */
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.record-type {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  margin-right: 20rpx;
+  min-width: 80rpx;
+  text-align: center;
+}
+
+.type-work {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.type-off {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.type-out {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.type-back {
+  background: #fff0f6;
+  color: #eb2f96;
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.record-time {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.record-address {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400rpx;
+}
+
+.record-remark {
+  font-size: 22rpx;
+  color: #07c160;
+  margin-top: 6rpx;
+}
+
+.record-right {
+  padding-left: 20rpx;
+}
+
+.delete-btn {
+  font-size: 32rpx;
+  color: #ccc;
+  padding: 10rpx;
+}
+
+.delete-btn:active {
+  color: #ff4d4f;
+}
+
+/* 无记录提示 */
+.no-records {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}

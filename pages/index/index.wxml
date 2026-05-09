@@ -1,0 +1,98 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 时间显示区域 -->
+  <view class="time-section">
+    <view class="current-time">{{currentTime}}</view>
+    <view class="current-date">{{currentDate}}</view>
+  </view>
+
+  <!-- 打卡类型选择 -->
+  <view class="type-section">
+    <view class="type-item {{checkinType === '上班' ? 'active' : ''}}" bindtap="selectType" data-type="上班">
+      <text>上班</text>
+    </view>
+    <view class="type-item {{checkinType === '下班' ? 'active' : ''}}" bindtap="selectType" data-type="下班">
+      <text>下班</text>
+    </view>
+    <view class="type-item {{checkinType === '外出' ? 'active' : ''}}" bindtap="selectType" data-type="外出">
+      <text>外出</text>
+    </view>
+    <view class="type-item {{checkinType === '返回' ? 'active' : ''}}" bindtap="selectType" data-type="返回">
+      <text>返回</text>
+    </view>
+  </view>
+
+  <!-- 定位信息区域 -->
+  <view class="location-section">
+    <view class="location-header">
+      <text class="location-icon">📍</text>
+      <text class="location-text">{{locationAddress || '请允许定位权限'}}</text>
+    </view>
+    <view class="location-coords" wx:if="{{latitude && longitude}}">
+      <text>纬度: {{latitude}}</text>
+      <text>经度: {{longitude}}</text>
+    </view>
+    <view class="refresh-btn" bindtap="getLocation">
+      <text>刷新定位</text>
+    </view>
+  </view>
+
+  <!-- 备注输入框 -->
+  <view class="remark-section">
+    <input class="remark-input" 
+           placeholder="添加备注（可选）" 
+           value="{{remark}}"
+           bindinput="onRemarkInput"
+           maxlength="100" />
+  </view>
+
+  <!-- 打卡按钮 -->
+  <view class="checkin-btn {{canCheckin ? '' : 'disabled'}}" bindtap="doCheckin">
+    <text>打 卡</text>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-number">{{todayCount}}</text>
+      <text class="stat-label">今日</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{weekCount}}</text>
+      <text class="stat-label">本周</text>
+    </view>
+  </view>
+
+  <!-- 打卡记录列表 -->
+  <view class="records-section">
+    <view class="records-header">
+      <text class="records-title">打卡记录</text>
+      <view class="records-actions">
+        <text class="action-btn export-btn" bindtap="exportRecords">导出</text>
+        <text class="action-btn clear-btn" bindtap="clearRecords">清空</text>
+      </view>
+    </view>
+
+    <view class="records-list" wx:if="{{records.length > 0}}">
+      <view class="record-item" wx:for="{{records}}" wx:key="id">
+        <view class="record-left">
+          <view class="record-type {{item.type === '上班' ? 'type-work' : item.type === '下班' ? 'type-off' : item.type === '外出' ? 'type-out' : 'type-back'}}">
+            {{item.type}}
+          </view>
+          <view class="record-info">
+            <text class="record-time">{{item.time}}</text>
+            <text class="record-address">{{item.address}}</text>
+            <text class="record-remark" wx:if="{{item.remark}}">备注: {{item.remark}}</text>
+          </view>
+        </view>
+        <view class="record-right">
+          <text class="delete-btn" bindtap="deleteRecord" data-id="{{item.id}}">✕</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="no-records" wx:else>
+      <text>暂无打卡记录</text>
+    </view>
+  </view>
+</view>
