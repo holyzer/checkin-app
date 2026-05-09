@@ -683,7 +683,7 @@
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 10000,
+                    timeout: 30000,
                     maximumAge: 0
                 }
             );
@@ -703,15 +703,23 @@
             const callbackName = 'qqMapCallback_' + Date.now();
             const script = document.createElement('script');
 
+            // 优先使用POI名称，更精确（比如"XX小区"、"XX大厦"）
             window[callbackName] = function(data) {
                 delete window[callbackName];
                 document.head.removeChild(script);
 
                 if (data.status === 0) {
-                    const recommend = data.result.formatted_addresses;
-                    const address = data.result.address;
-                    document.getElementById('locationAddress').textContent =
-                        recommend ? recommend.recommend : address;
+                    const result = data.result;
+                    // POI列表通常有最精确的位置描述
+                    let address = '';
+                    if (result.pois && result.pois.length > 0) {
+                        address = result.pois[0].title + '（' + result.pois[0].address + '）';
+                    } else if (result.formatted_addresses && result.formatted_addresses.recommend) {
+                        address = result.formatted_addresses.recommend;
+                    } else {
+                        address = result.address;
+                    }
+                    document.getElementById('locationAddress').textContent = address;
                     document.getElementById('locationAddress').classList.remove('placeholder');
                 } else {
                     document.getElementById('locationAddress').textContent =
@@ -720,6 +728,7 @@
                 }
             };
 
+            // get_poi=1 会返回周边POI，让地址更精确
             script.src = `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${key}&get_poi=1&output=jsonp&callback=${callbackName}`;
             script.onerror = function() {
                 delete window[callbackName];
