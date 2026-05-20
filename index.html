@@ -175,6 +175,144 @@
             color: #06AD56;
         }
 
+        /* ========== 手动定位输入 ========== */
+        .manual-location-row {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+        }
+
+        .manual-location-input {
+            flex: 1;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            outline: none;
+            font-family: var(--font);
+        }
+
+        .manual-location-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .manual-location-input:focus {
+            border-color: var(--brand);
+        }
+
+        .manual-confirm-btn {
+            padding: var(--space-sm) var(--space-md);
+            font-size: 14px;
+            color: white;
+            background: var(--brand);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+
+        .manual-confirm-btn:hover {
+            background: #06AD56;
+        }
+
+        /* ========== 附近POI列表 ========== */
+        .poi-section {
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+        }
+
+        .poi-title {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .poi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .poi-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .poi-item:hover {
+            background: var(--bg-page);
+        }
+
+        .poi-item.selected {
+            background: var(--brand-light);
+        }
+
+        .poi-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .poi-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .poi-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .poi-address {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .poi-select-btn {
+            font-size: 12px;
+            padding: 4px 10px;
+            color: var(--brand);
+            background: var(--brand-light);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+
+        .poi-select-btn:hover {
+            background: #D0F0E0;
+        }
+
+        .poi-loading {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: var(--space-md);
+        }
+
+        .poi-empty {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: var(--space-sm);
+        }
+
         /* ========== 备注输入框（弱化） ========== */
         .remark-section {
             margin-bottom: var(--space-md);
@@ -539,6 +677,20 @@
             </div>
         </div>
         <button class="refresh-btn" onclick="getLocation()">刷新定位</button>
+
+        <!-- 手动输入位置 -->
+        <div class="manual-location-row">
+            <input type="text" class="manual-location-input" id="manualLocation" placeholder="手动输入地点名称">
+            <button class="manual-confirm-btn" onclick="confirmManualLocation()">使用</button>
+        </div>
+
+        <!-- 附近POI列表 -->
+        <div class="poi-section" id="poiSection" style="display: none;">
+            <div class="poi-title">附近地点（点击选择）</div>
+            <div class="poi-list" id="poiList">
+                <div class="poi-loading">加载中...</div>
+            </div>
+        </div>
     </div>
 
     <!-- 备注输入框（弱化） -->
@@ -601,6 +753,7 @@
         let currentLongitude = null;
         let canCheckin = false;
         let modalCallback = null;
+        let currentPOIList = []; // 当前POI列表
 
         // 初始化
         window.onload = function() {
@@ -737,6 +890,107 @@
                 document.getElementById('locationAddress').classList.remove('placeholder');
             };
             document.head.appendChild(script);
+
+            // 同时获取附近POI列表
+            fetchNearbyPOIs(latitude, longitude);
+        }
+
+        // 获取附近POI列表
+        function fetchNearbyPOIs(latitude, longitude) {
+            const key = CONFIG.qqMapKey;
+            const poiSection = document.getElementById('poiSection');
+            const poiList = document.getElementById('poiList');
+
+            if (!key) {
+                poiSection.style.display = 'none';
+                return;
+            }
+
+            poiSection.style.display = 'block';
+            poiList.innerHTML = '<div class="poi-loading">加载中...</div>';
+
+            const callbackName = 'qqMapPOICallback_' + Date.now();
+            const script = document.createElement('script');
+
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.head.removeChild(script);
+
+                currentPOIList = []; // 清空之前的列表
+
+                if (data.status === 0 && data.data && data.data.length > 0) {
+                    // 取前5个POI
+                    const pois = data.data.slice(0, 5);
+                    currentPOIList = pois;
+
+                    poiList.innerHTML = pois.map((poi, index) => `
+                        <div class="poi-item" onclick="selectPOI(${index})">
+                            <span class="poi-icon">📍</span>
+                            <div class="poi-info">
+                                <div class="poi-name">${poi.title}</div>
+                                <div class="poi-address">${poi.address || '地址未知'}</div>
+                            </div>
+                            <button class="poi-select-btn" onclick="event.stopPropagation(); selectPOI(${index})">选择</button>
+                        </div>
+                    `).join('');
+                } else {
+                    poiList.innerHTML = '<div class="poi-empty">暂无附近地点</div>';
+                }
+            };
+
+            script.src = `https://apis.map.qq.com/ws/place/v1/search?boundary=nearby(${latitude},${longitude},500)&page_size=5&key=${key}&output=jsonp&callback=${callbackName}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                poiList.innerHTML = '<div class="poi-empty">加载失败</div>';
+            };
+            document.head.appendChild(script);
+        }
+
+        // 选择POI
+        function selectPOI(index) {
+            const poi = currentPOIList[index];
+            if (!poi) return;
+
+            // 更新地址显示
+            document.getElementById('locationAddress').textContent = poi.title;
+            document.getElementById('locationAddress').classList.remove('placeholder');
+
+            // 更新坐标（如果有的话）
+            if (poi.location) {
+                currentLatitude = poi.location.lat.toFixed(6);
+                currentLongitude = poi.location.lng.toFixed(6);
+                document.getElementById('latitude').textContent = `纬度: ${currentLatitude}`;
+                document.getElementById('longitude').textContent = `经度: ${currentLongitude}`;
+                document.getElementById('locationCoords').style.display = 'flex';
+            }
+
+            // 高亮选中项
+            document.querySelectorAll('.poi-item').forEach((item, i) => {
+                item.classList.toggle('selected', i === index);
+            });
+
+            showToast(`已选择：${poi.title}`);
+        }
+
+        // 手动输入位置确认
+        function confirmManualLocation() {
+            const input = document.getElementById('manualLocation');
+            const locationName = input.value.trim();
+
+            if (!locationName) {
+                showToast('请输入地点名称');
+                return;
+            }
+
+            // 更新地址显示
+            document.getElementById('locationAddress').textContent = locationName;
+            document.getElementById('locationAddress').classList.remove('placeholder');
+
+            // 手动模式下经纬度保持不变，但标记为可打卡
+            canCheckin = true;
+            document.getElementById('checkinBtn').disabled = false;
+
+            showToast('已使用手动位置');
         }
 
         // 执行打卡
