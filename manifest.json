@@ -1,7 +1,7 @@
 {
-  "name": "打卡助手",
-  "short_name": "打卡",
-  "description": "简洁的上下班打卡工具",
+  "name": "出差记录",
+  "short_name": "出差记录",
+  "description": "记录出差和在公司的日常状态",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#F5F5F5",
